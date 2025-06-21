@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 export interface MemoryEntry {
   id: string;
@@ -46,6 +47,7 @@ export interface MemoryContext {
 
 export const useMemoryBank = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [memories, setMemories] = useState<MemoryEntry[]>([]);
   const [learningPatterns, setLearningPatterns] = useState<LearningPattern[]>([]);
   const [currentSession, setCurrentSession] = useState<string | null>(null);
@@ -80,10 +82,14 @@ export const useMemoryBank = () => {
       return data;
     } catch (error) {
       console.error('Error adding memory entry:', error);
-      toast.error('Failed to save memory entry');
+      toast({
+        title: "Error",
+        description: "Failed to save memory entry",
+        variant: "destructive",
+      });
       return null;
     }
-  }, [user]);
+  }, [user, toast]);
 
   // Get relevant memories
   const getRelevantMemories = useCallback(async (
@@ -135,10 +141,14 @@ export const useMemoryBank = () => {
       return data;
     } catch (error) {
       console.error('Error updating learning pattern:', error);
-      toast.error('Failed to update learning pattern');
+      toast({
+        title: "Error",
+        description: "Failed to update learning pattern",
+        variant: "destructive",
+      });
       return null;
     }
-  }, [user]);
+  }, [user, toast]);
 
   // Get learning patterns
   const getLearningPatterns = useCallback(async () => {
@@ -189,10 +199,14 @@ export const useMemoryBank = () => {
       return data;
     } catch (error) {
       console.error('Error starting context session:', error);
-      toast.error('Failed to start session tracking');
+      toast({
+        title: "Error",
+        description: "Failed to start session tracking",
+        variant: "destructive",
+      });
       return null;
     }
-  }, [user, currentSession, addMemoryEntry]);
+  }, [user, currentSession, addMemoryEntry, toast]);
 
   // End context session
   const endContextSession = useCallback(async (
@@ -231,10 +245,14 @@ export const useMemoryBank = () => {
       return true;
     } catch (error) {
       console.error('Error ending context session:', error);
-      toast.error('Failed to end session tracking');
+      toast({
+        title: "Error",
+        description: "Failed to end session tracking",
+        variant: "destructive",
+      });
       return false;
     }
-  }, [user, currentSession, addMemoryEntry]);
+  }, [user, currentSession, addMemoryEntry, toast]);
 
   // Generate recommendations
   const generateRecommendations = useCallback(async () => {
@@ -265,12 +283,16 @@ export const useMemoryBank = () => {
       return data || [];
     } catch (error) {
       console.error('Error generating recommendations:', error);
-      toast.error('Failed to generate recommendations');
+      toast({
+        title: "Error",
+        description: "Failed to generate recommendations",
+        variant: "destructive",
+      });
       return [];
     } finally {
       setLoading(false);
     }
-  }, [user, addMemoryEntry]);
+  }, [user, addMemoryEntry, toast]);
 
   // Record learning context
   const recordLearningContext = useCallback(async (context: MemoryContext) => {
@@ -355,10 +377,10 @@ export const useMemoryBank = () => {
         .filter(m => m.entry_type === 'learning_context')
         .map(m => m.content);
 
-      // Analyze performance patterns
+      // Analyze performance patterns with proper type casting
       const performancePattern = patterns.find(p => p.pattern_type === 'performance_pattern');
-      if (performancePattern) {
-        const data = performancePattern.pattern_data;
+      if (performancePattern && performancePattern.pattern_data) {
+        const data = performancePattern.pattern_data as any;
         if (data.recent_performance?.score > 0.8) {
           insights.strongTopics.push(data.activity_type);
         } else if (data.recent_performance?.score < 0.6) {
@@ -366,10 +388,10 @@ export const useMemoryBank = () => {
         }
       }
 
-      // Analyze time preferences
+      // Analyze time preferences with proper type casting
       const timePattern = patterns.find(p => p.pattern_type === 'time_preference');
-      if (timePattern) {
-        const data = timePattern.pattern_data;
+      if (timePattern && timePattern.pattern_data) {
+        const data = timePattern.pattern_data as any;
         insights.preferredStudyTimes.push(`${data.duration} minutes for ${data.activity_type}`);
       }
 
@@ -387,7 +409,7 @@ export const useMemoryBank = () => {
       getLearningPatterns();
       generateRecommendations();
     }
-  }, [user]);
+  }, [user, getRelevantMemories, getLearningPatterns, generateRecommendations]);
 
   // Auto-start session when user becomes active
   useEffect(() => {

@@ -22,7 +22,7 @@ interface Question {
   option_b: string;
   option_c: string;
   option_d: string;
-  correct_answer: 'A' | 'B' | 'C' | 'D';
+  correct_answer: string; // Changed from 'A' | 'B' | 'C' | 'D' to string to match database
   points: number;
   order_index: number;
 }
@@ -31,7 +31,7 @@ interface Quiz {
   id: string;
   title: string;
   description: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: string; // Changed from literal types to string to match database
   time_limit: number;
   points_per_question: number;
   created_at: string;
@@ -47,7 +47,7 @@ const QuizManagement = () => {
   const [newQuiz, setNewQuiz] = useState({
     title: '',
     description: '',
-    difficulty: 'medium' as const,
+    difficulty: 'medium',
     time_limit: 300,
     points_per_question: 10,
   });
@@ -276,9 +276,7 @@ const QuizManagement = () => {
                     <Label htmlFor="difficulty">Difficulty</Label>
                     <Select
                       value={newQuiz.difficulty}
-                      onValueChange={(value: 'easy' | 'medium' | 'hard') => 
-                        setNewQuiz({ ...newQuiz, difficulty: value })
-                      }
+                      onValueChange={(value) => setNewQuiz({ ...newQuiz, difficulty: value })}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -387,9 +385,7 @@ const QuizManagement = () => {
                       <Label>Correct Answer</Label>
                       <RadioGroup
                         value={currentQuestion.correct_answer}
-                        onValueChange={(value: 'A' | 'B' | 'C' | 'D') => 
-                          setCurrentQuestion({ ...currentQuestion, correct_answer: value })
-                        }
+                        onValueChange={(value) => setCurrentQuestion({ ...currentQuestion, correct_answer: value })}
                         className="flex flex-wrap gap-4"
                       >
                         <div className="flex items-center space-x-2">
