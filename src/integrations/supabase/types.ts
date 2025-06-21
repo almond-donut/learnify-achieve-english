@@ -107,6 +107,141 @@ export type Database = {
           },
         ]
       }
+      context_sessions: {
+        Row: {
+          activities: Json | null
+          context_summary: string | null
+          id: string
+          performance_metrics: Json | null
+          session_end: string | null
+          session_start: string | null
+          total_duration_minutes: number | null
+          user_id: string | null
+        }
+        Insert: {
+          activities?: Json | null
+          context_summary?: string | null
+          id?: string
+          performance_metrics?: Json | null
+          session_end?: string | null
+          session_start?: string | null
+          total_duration_minutes?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          activities?: Json | null
+          context_summary?: string | null
+          id?: string
+          performance_metrics?: Json | null
+          session_end?: string | null
+          session_start?: string | null
+          total_duration_minutes?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      learning_patterns: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          last_updated: string | null
+          pattern_data: Json
+          pattern_type: string
+          user_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          last_updated?: string | null
+          pattern_data: Json
+          pattern_type: string
+          user_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          last_updated?: string | null
+          pattern_data?: Json
+          pattern_type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      memory_entries: {
+        Row: {
+          content: Json
+          context_tags: string[] | null
+          created_at: string | null
+          embedding: string | null
+          entry_type: string
+          expires_at: string | null
+          id: string
+          importance_score: number | null
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          content: Json
+          context_tags?: string[] | null
+          created_at?: string | null
+          embedding?: string | null
+          entry_type: string
+          expires_at?: string | null
+          id?: string
+          importance_score?: number | null
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: Json
+          context_tags?: string[] | null
+          created_at?: string | null
+          embedding?: string | null
+          entry_type?: string
+          expires_at?: string | null
+          id?: string
+          importance_score?: number | null
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      memory_recommendations: {
+        Row: {
+          confidence_score: number | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          recommendation_data: Json
+          recommendation_type: string
+          user_id: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          recommendation_data: Json
+          recommendation_type: string
+          user_id?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          recommendation_data?: Json
+          recommendation_type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       questions: {
         Row: {
           correct_answer: string
@@ -409,7 +544,166 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_memory_entry: {
+        Args: {
+          p_user_id: string
+          p_entry_type: string
+          p_content: Json
+          p_context_tags?: string[]
+          p_importance_score?: number
+          p_expires_days?: number
+        }
+        Returns: string
+      }
+      binary_quantize: {
+        Args: { "": string } | { "": unknown }
+        Returns: unknown
+      }
+      check_and_award_achievements: {
+        Args: { p_student_id: string }
+        Returns: {
+          achievement_id: string
+          achievement_name: string
+        }[]
+      }
+      cleanup_expired_memories: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      end_context_session: {
+        Args: {
+          p_session_id: string
+          p_activities?: Json
+          p_performance_metrics?: Json
+          p_context_summary?: string
+        }
+        Returns: boolean
+      }
+      generate_memory_recommendations: {
+        Args: { p_user_id: string }
+        Returns: {
+          recommendation_type: string
+          recommendation_data: Json
+          confidence_score: number
+        }[]
+      }
+      get_relevant_memories: {
+        Args: {
+          p_user_id: string
+          p_entry_types?: string[]
+          p_context_tags?: string[]
+          p_limit?: number
+        }
+        Returns: {
+          id: string
+          entry_type: string
+          content: Json
+          context_tags: string[]
+          importance_score: number
+          created_at: string
+        }[]
+      }
+      halfvec_avg: {
+        Args: { "": number[] }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      hnsw_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      l2_norm: {
+        Args: { "": unknown } | { "": unknown }
+        Returns: number
+      }
+      l2_normalize: {
+        Args: { "": string } | { "": unknown } | { "": unknown }
+        Returns: unknown
+      }
+      sparsevec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      start_context_session: {
+        Args: { p_user_id: string }
+        Returns: string
+      }
+      update_learning_pattern: {
+        Args: {
+          p_user_id: string
+          p_pattern_type: string
+          p_pattern_data: Json
+          p_confidence_score?: number
+        }
+        Returns: string
+      }
+      vector_avg: {
+        Args: { "": number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { "": string } | { "": unknown }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { "": string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { "": string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
     }
     Enums: {
       quiz_difficulty: "easy" | "medium" | "hard"
